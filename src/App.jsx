@@ -99,8 +99,6 @@ export default function App() {
 
   return (
     <div className="app">
-      {/* ── BACKGROUND ── */}
-      <div className="bg-gradient" />
 
       {/* ── HEADER ── */}
       <header>
