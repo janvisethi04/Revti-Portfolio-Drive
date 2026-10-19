@@ -1,3 +1,5 @@
+import { Readable } from 'node:stream'
+
 export default async function handler(req, res) {
   const { url } = req.query
 
@@ -8,17 +10,17 @@ export default async function handler(req, res) {
 
   try {
     const upstream = await fetch(url)
-    if (!upstream.ok) {
-      res.status(upstream.status).send('Failed to fetch PDF')
+    if (!upstream.ok || !upstream.body) {
+      res.status(upstream.status || 502).send('Failed to fetch PDF')
       return
     }
 
-    const buffer = await upstream.arrayBuffer()
-
     res.setHeader('Content-Type', 'application/pdf')
     res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Cache-Control', 'public, max-age=3600')
-    res.status(200).send(Buffer.from(buffer))
+    res.setHeader('Cache-Control', 'public, max-age=86400, immutable')
+    res.status(200)
+
+    Readable.fromWeb(upstream.body).pipe(res)
   } catch {
     res.status(502).send('Error fetching PDF')
   }

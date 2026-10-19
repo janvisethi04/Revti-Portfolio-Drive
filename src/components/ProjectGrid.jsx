@@ -1,5 +1,31 @@
 import { useState, useMemo } from 'react'
+import { flushSync } from 'react-dom'
 import PdfThumbnail from './PdfThumbnail'
+
+const PROJECT_CATEGORY_MAP = {
+  'revti portfolio': 'Branding',
+  'converse ai': 'Website',
+  'zuuro': 'Website',
+  'auric mills': 'Marketing',
+  'giwc': 'Social Media',
+  'nashville grind': 'Design',
+  'subaru': 'Marketing',
+  'raahgiri foundation': 'Social Media',
+  'affinity': 'Branding',
+  'activation': 'Marketing',
+  'uhrs': 'Website',
+  'appcino': 'Design',
+  'hfza': 'Branding',
+  'the kapas': 'Design',
+  'dhatvik': 'Social Media',
+  'au website': 'Website',
+  'gulmohar lane': 'Branding',
+  'au foundation': 'Social Media',
+  'bewizor': 'Marketing',
+  'icwf': 'Design',
+  'mmds': 'Website',
+  'revti': 'Branding',
+}
 
 export default function ProjectGrid({ entries, loading }) {
   const [selectedCategory, setSelectedCategory] = useState('All')
@@ -77,14 +103,27 @@ export default function ProjectGrid({ entries, loading }) {
 
   const categoryList = standardCategories
 
+  const getCategory = (entry) => {
+    const key = entry.project ? entry.project.trim().toLowerCase() : ''
+    return PROJECT_CATEGORY_MAP[key] || 'Website'
+  }
+
   // Filter by category
   const filtered = useMemo(() => {
     if (selectedCategory === 'All') return entries
-    return entries.filter(e => {
-      const entryCat = e.project ? e.project.trim().toLowerCase() : 'general'
-      return entryCat === selectedCategory.toLowerCase()
-    })
+    return entries.filter(e => getCategory(e) === selectedCategory)
   }, [entries, selectedCategory])
+
+  // Animated category switch using the View Transitions API (falls back silently if unsupported)
+  const changeCategory = (cat) => {
+    if (!document.startViewTransition) {
+      setSelectedCategory(cat)
+      return
+    }
+    document.startViewTransition(() => {
+      flushSync(() => setSelectedCategory(cat))
+    })
+  }
 
   return (
     <div className="dashboard-content">
@@ -96,7 +135,7 @@ export default function ProjectGrid({ entries, loading }) {
               key={cat}
               type="button"
               className={`category-chip ${selectedCategory.toLowerCase() === cat.toLowerCase() ? 'active' : ''}`}
-              onClick={() => setSelectedCategory(cat)}
+              onClick={() => changeCategory(cat)}
             >
               {cat}
             </button>
@@ -127,6 +166,7 @@ export default function ProjectGrid({ entries, loading }) {
               <div
                 key={entry.id}
                 className="project-card"
+                style={{ viewTransitionName: `card-${entry.id}` }}
                 onClick={() => handleCardClick(entry.url)}
               >
                 {/* Thumbnail Header Area */}
@@ -185,7 +225,7 @@ export default function ProjectGrid({ entries, loading }) {
                   </h3>
 
                   <div className="project-meta-row">
-                    <span className="project-category">{entry.project || 'Website'}</span>
+                    <span className="project-category">{getCategory(entry)}</span>
                     <button
                       type="button"
                       className={`card-copy-btn ${copiedId === entry.id ? 'copied' : ''}`}

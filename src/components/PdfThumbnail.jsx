@@ -4,11 +4,19 @@ import pdfWorker from 'pdfjs-dist/build/pdf.worker.mjs?url'
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker
 
+// Rendered-page cache shared across cards so switching filters doesn't re-fetch/re-render PDFs already shown once.
+const thumbnailCache = new Map()
+
 export default function PdfThumbnail({ url, alt }) {
-  const canvasRef = useRef(null)
+  const [src, setSrc] = useState(thumbnailCache.get(url) || null)
   const [failed, setFailed] = useState(false)
 
   useEffect(() => {
+    if (thumbnailCache.has(url)) {
+      setSrc(thumbnailCache.get(url))
+      return
+    }
+
     let cancelled = false
 
     const render = async () => {
@@ -16,15 +24,17 @@ export default function PdfThumbnail({ url, alt }) {
         const proxied = `/api/pdf-proxy?url=${encodeURIComponent(url)}`
         const pdf = await pdfjsLib.getDocument(proxied).promise
         const page = await pdf.getPage(1)
-        const viewport = page.getViewport({ scale: 1.5 })
+        const viewport = page.getViewport({ scale: 1.1 })
 
-        const canvas = canvasRef.current
-        if (!canvas || cancelled) return
+        const canvas = document.createElement('canvas')
         canvas.width = viewport.width
         canvas.height = viewport.height
-
         const ctx = canvas.getContext('2d')
         await page.render({ canvasContext: ctx, viewport }).promise
+
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.82)
+        thumbnailCache.set(url, dataUrl)
+        if (!cancelled) setSrc(dataUrl)
       } catch {
         if (!cancelled) setFailed(true)
       }
@@ -46,5 +56,9 @@ export default function PdfThumbnail({ url, alt }) {
     )
   }
 
-  return <canvas ref={canvasRef} className="pdf-canvas-thumb" aria-label={alt} />
+  if (!src) {
+    return <div className="pdf-canvas-skeleton" aria-label={alt} />
+  }
+
+  return <img src={src} alt={alt} className="pdf-canvas-thumb" />
 }
