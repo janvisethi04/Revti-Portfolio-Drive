@@ -33,7 +33,7 @@ const PROJECT_CATEGORY_MAP = {
   'affinity travels': 'Branding',
 }
 
-export default function ProjectGrid({ entries, loading }) {
+export default function ProjectGrid({ entries, loading, searchQuery = '' }) {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [copiedId, setCopiedId]                 = useState(null)
 
@@ -114,11 +114,22 @@ export default function ProjectGrid({ entries, loading }) {
     return PROJECT_CATEGORY_MAP[key] || 'Website'
   }
 
-  // Filter by category
+  // Filter by category + search
   const filtered = useMemo(() => {
-    if (selectedCategory === 'All') return entries
-    return entries.filter(e => getCategory(e) === selectedCategory)
-  }, [entries, selectedCategory])
+    let result = selectedCategory === 'All'
+      ? entries
+      : entries.filter(e => getCategory(e) === selectedCategory)
+
+    const q = searchQuery.trim().toLowerCase()
+    if (q) {
+      result = result.filter(e =>
+        (e.name || '').toLowerCase().includes(q) ||
+        (e.project || '').toLowerCase().includes(q)
+      )
+    }
+
+    return result
+  }, [entries, selectedCategory, searchQuery])
 
   // Animated category switch using the View Transitions API (falls back silently if unsupported)
   const changeCategory = (cat) => {
