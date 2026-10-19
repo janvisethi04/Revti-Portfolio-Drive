@@ -32,6 +32,8 @@ const PROJECT_CATEGORY_MAP = {
   'rajputi rental': 'Website',
   'affinity travels': 'Branding',
   'unmukt mahila': 'Website',
+  'revital uae': 'Website',
+  'kandofromhome': 'Website',
 }
 
 export default function ProjectGrid({ entries, loading, searchQuery = '' }) {
