@@ -1,6 +1,6 @@
 /* ══════════════════════════════════════════════════════════
-   BLACK & WHITE MONOCHROME THEME
-   Inspired by Hostinger Clean Dashboard
+   BLACK MONOCHROME DARK THEME
+   Inspired by Minimalist Clean Dashboard
    ══════════════════════════════════════════════════════════ */
 
 * {
@@ -10,16 +10,19 @@
 }
 
 :root {
-  --bg: #f4f5f8;
-  --white: #ffffff;
-  --black: #111827;
-  --dark-hover: #000000;
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --border: #e5e7eb;
-  --border-card: #e2e5ea;
-  --border-hover: #9ca3af;
-  --surface-alt: #f9fafb;
+  --bg: #000000;
+  --bg-header: #0a0a0a;
+  --card-bg: #111111;
+  --card-hover: #181818;
+  --surface-alt: #161616;
+
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+
+  --border: #222222;
+  --border-card: #222222;
+  --border-hover: #444444;
 
   --radius-sm: 6px;
   --radius-md: 10px;
@@ -44,7 +47,7 @@ body {
 
 /* ─── HEADER ─── */
 header {
-  background: var(--white);
+  background: var(--bg-header);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
@@ -74,8 +77,9 @@ header {
   width: 32px;
   height: 32px;
   border-radius: var(--radius-sm);
-  background: #f3f4f6;
-  color: var(--black);
+  background: #1c1c1c;
+  color: #ffffff;
+  border: 1px solid var(--border);
 }
 
 .logo-text {
@@ -85,7 +89,7 @@ header {
   letter-spacing: -0.02em;
 }
 
-/* ─── MAIN CONTENT CONTAINER (WITH SIDE PADDING LIKE PIC 2) ─── */
+/* ─── MAIN CONTENT CONTAINER (WITH SIDE PADDING) ─── */
 main {
   max-width: 1240px;
   margin: 0 auto;
@@ -116,10 +120,10 @@ main {
   display: inline-flex;
   align-items: center;
   padding: 8px 20px;
-  background: var(--white);
+  background: #141414;
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
-  color: #374151;
+  color: #d4d4d8;
   font-size: 0.88rem;
   font-weight: 500;
   font-family: 'Inter', sans-serif;
@@ -129,16 +133,16 @@ main {
 }
 
 .category-chip:hover {
-  border-color: #9ca3af;
-  color: var(--black);
-  background: #f9fafb;
+  border-color: #52525b;
+  color: #ffffff;
+  background: #1f1f1f;
 }
 
-/* Active Category Pill (Pure Black) */
+/* Active Category Pill (Pure White on Black) */
 .category-chip.active {
-  background: var(--black);
-  border-color: var(--black);
-  color: var(--white);
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #000000;
   font-weight: 600;
 }
 
@@ -176,7 +180,7 @@ main {
 }
 
 .project-card {
-  background: var(--white);
+  background: var(--card-bg);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-card);
   overflow: hidden;
@@ -189,7 +193,7 @@ main {
 
 .project-card:hover {
   border-color: var(--border-hover);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   transform: translateY(-2px);
 }
 
@@ -198,9 +202,9 @@ main {
   position: relative;
   width: 100%;
   height: 165px;
-  background: #f3f4f6;
+  background: #181818;
   overflow: hidden;
-  border-bottom: 1px solid #f0f1f3;
+  border-bottom: 1px solid #1f1f1f;
 }
 
 .thumbnail-wrapper img {
@@ -218,7 +222,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f9fafb;
+  background: #141414;
 }
 
 .drive-preview {
@@ -226,7 +230,7 @@ main {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  color: #374151;
+  color: #d4d4d8;
   font-size: 0.82rem;
   font-weight: 500;
 }
@@ -262,9 +266,9 @@ main {
   width: 28px;
   height: 28px;
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid var(--border);
-  color: #6b7280;
+  background: rgba(20, 20, 20, 0.85);
+  border: 1px solid #333333;
+  color: #a1a1aa;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -279,9 +283,9 @@ main {
 }
 
 .card-delete-btn:hover {
-  background: #fee2e2;
-  border-color: #fca5a5;
-  color: #dc2626;
+  background: rgba(220, 38, 38, 0.2);
+  border-color: rgba(220, 38, 38, 0.6);
+  color: #f87171;
 }
 
 /* Card Body - Exactly matching Picture 1 */
@@ -313,14 +317,14 @@ main {
 }
 
 .meta-dot {
-  color: #9ca3af;
+  color: #52525b;
 }
 
 /* ─── EMPTY STATE ─── */
 .empty-state {
   text-align: center;
   padding: 80px 20px;
-  background: var(--white);
+  background: var(--card-bg);
   border: 1px dashed var(--border);
   border-radius: var(--radius-card);
 }
@@ -334,7 +338,7 @@ main {
   width: 28px;
   height: 28px;
   border: 2px solid var(--border);
-  border-top-color: var(--black);
+  border-top-color: #ffffff;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
   margin: 0 auto 12px;
@@ -348,8 +352,8 @@ main {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(2px);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
   z-index: 100;
   display: flex;
   align-items: center;
@@ -358,14 +362,14 @@ main {
 }
 
 .modal-confirm {
-  background: var(--white);
+  background: #141414;
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
   padding: 28px 24px;
   width: 100%;
   max-width: 380px;
   text-align: center;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
 }
 
 .modal-confirm h3 {
@@ -390,10 +394,10 @@ main {
 
 .btn-cancel {
   padding: 8px 18px;
-  background: var(--white);
+  background: #202020;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  color: #374151;
+  color: #e4e4e7;
   font-size: 0.88rem;
   font-weight: 500;
   cursor: pointer;
@@ -401,7 +405,7 @@ main {
 }
 
 .btn-cancel:hover {
-  background: #f9fafb;
+  background: #2a2a2a;
 }
 
 .btn-danger {
@@ -425,7 +429,8 @@ main {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  background: var(--black);
+  background: #222222;
+  border: 1px solid #333333;
   border-radius: var(--radius-md);
   padding: 10px 18px;
   display: flex;
@@ -433,8 +438,8 @@ main {
   gap: 8px;
   font-size: 0.88rem;
   font-weight: 500;
-  color: var(--white);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
   transform: translateY(60px);
   opacity: 0;
   transition: transform 0.2s ease, opacity 0.2s ease;
