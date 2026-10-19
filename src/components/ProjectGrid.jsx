@@ -29,6 +29,8 @@ const PROJECT_CATEGORY_MAP = {
   'egov africa': 'Website',
   'bmg foundation': 'Social Media',
   'flowerbox': 'Marketing',
+  'rajputi rental': 'Website',
+  'affinity travels': 'Branding',
 }
 
 export default function ProjectGrid({ entries, loading }) {
