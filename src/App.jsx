@@ -119,7 +119,7 @@ export default function App() {
                 <line x1="12" y1="17" x2="12" y2="21"></line>
               </svg>
             </span>
-            <span className="logo-text">Projects</span>
+            <span className="logo-text">Revti Portfolio Links</span>
             <span className="counter-pill">{entries.length}</span>
           </div>
 
