@@ -89,6 +89,61 @@ header {
   letter-spacing: -0.02em;
 }
 
+.logo-image {
+  height: 36px;
+  width: auto;
+  display: block;
+}
+
+/* ─── FOOTER ─── */
+.site-footer {
+  border-top: 1px solid var(--border);
+  background: var(--bg-header);
+  margin-top: 40px;
+}
+
+.footer-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 24px 32px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.footer-address {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-links a {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.footer-links a:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+@media (max-width: 560px) {
+  .footer-container {
+    padding: 20px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
 /* ─── MAIN CONTENT CONTAINER (WITH SIDE PADDING) ─── */
 main {
   max-width: 1240px;

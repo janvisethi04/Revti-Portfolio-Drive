@@ -112,14 +112,7 @@ export default function App() {
       <header>
         <div className="header-container">
           <div className="logo">
-            <span className="logo-icon">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                <line x1="8" y1="21" x2="16" y2="21"></line>
-                <line x1="12" y1="17" x2="12" y2="21"></line>
-              </svg>
-            </span>
-            <span className="logo-text">Revti Portfolio Links</span>
+            <img src="/revti-logo.png" alt="Revti Digital" className="logo-image" />
           </div>
 
           <div className="header-actions">
@@ -135,6 +128,18 @@ export default function App() {
           onDelete={handleDelete}
         />
       </main>
+
+      {/* ── FOOTER ── */}
+      <footer className="site-footer">
+        <div className="footer-container">
+          <p className="footer-address">F-21, Tonk Phatak, Jaipur, Raj 302015</p>
+          <div className="footer-links">
+            <a href="mailto:himanshu@revtidigital.com">himanshu@revtidigital.com</a>
+            <a href="tel:+917891331221">+91-78913 31221</a>
+            <a href="tel:+919982323333">99823 23333</a>
+          </div>
+        </div>
+      </footer>
 
       {/* ── ADD MODAL ── */}
       {showModal && (
