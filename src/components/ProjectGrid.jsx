@@ -75,14 +75,7 @@ export default function ProjectGrid({ entries, loading }) {
   // Categories list without numbers
   const standardCategories = ['All', 'Branding', 'Website', 'Marketing', 'Social Media', 'Design']
 
-  const categoryList = useMemo(() => {
-    const customCats = entries
-      .map(e => e.project ? e.project.trim() : null)
-      .filter(Boolean)
-      .filter(c => !standardCategories.some(s => s.toLowerCase() === c.toLowerCase()))
-
-    return [...standardCategories, ...Array.from(new Set(customCats))]
-  }, [entries])
+  const categoryList = standardCategories
 
   // Filter by category
   const filtered = useMemo(() => {
