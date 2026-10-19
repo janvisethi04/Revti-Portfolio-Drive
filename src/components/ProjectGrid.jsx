@@ -25,6 +25,10 @@ const PROJECT_CATEGORY_MAP = {
   'icwf': 'Design',
   'mmds': 'Website',
   'revti': 'Branding',
+  'cbetter': 'Website',
+  'egov africa': 'Website',
+  'bmg foundation': 'Social Media',
+  'flowerbox': 'Marketing',
 }
 
 export default function ProjectGrid({ entries, loading }) {
