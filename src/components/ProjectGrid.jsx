@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import PdfThumbnail from './PdfThumbnail'
 
 export default function ProjectGrid({ entries, loading }) {
   const [selectedCategory, setSelectedCategory] = useState('All')
@@ -137,22 +138,26 @@ export default function ProjectGrid({ entries, loading }) {
               >
                 {/* Thumbnail Header Area */}
                 <div className="thumbnail-wrapper">
-                  {thumbUrl ? (
-                    <img
-                      src={thumbUrl}
-                      alt={entry.name || domain}
-                      loading="lazy"
-                      data-stage="1"
-                      onError={(e) => handleImageError(e, entry)}
-                    />
-                  ) : null}
+                  {isPdfFile ? (
+                    <PdfThumbnail url={normalizeUrl(entry.url)} alt={entry.name || domain} />
+                  ) : (
+                    <>
+                      {thumbUrl ? (
+                        <img
+                          src={thumbUrl}
+                          alt={entry.name || domain}
+                          loading="lazy"
+                          data-stage="1"
+                          onError={(e) => handleImageError(e, entry)}
+                        />
+                      ) : null}
 
-                  {/* Fallback View */}
-                  <div
-                    className="thumbnail-fallback"
-                    style={{ display: thumbUrl ? 'none' : 'flex' }}
-                  >
-                    {isDrive ? (
+                      {/* Fallback View */}
+                      <div
+                        className="thumbnail-fallback"
+                        style={{ display: thumbUrl ? 'none' : 'flex' }}
+                      >
+                        {isDrive ? (
                       <div className="drive-preview">
                         <svg width="40" height="40" viewBox="0 0 87.3 78" fill="none">
                           <path d="M6.6 66.85l3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8H0c0 1.55.4 3.1 1.2 4.5l5.4 9.35z" fill="#0066DA"/>
@@ -163,14 +168,6 @@ export default function ProjectGrid({ entries, loading }) {
                           <path d="M73.4 26.5l-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3L43.65 25l24.4 42.25 12.65-21.9c.8-1.4 1.2-2.95 1.2-4.5l-7.3-9.85z" fill="#FFBA00"/>
                         </svg>
                         <span>Google Drive</span>
-                      </div>
-                    ) : isPdfFile ? (
-                      <div className="pdf-preview">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#E54B4B" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                          <polyline points="14 2 14 8 20 8"></polyline>
-                        </svg>
-                        <span>PDF Document</span>
                       </div>
                     ) : (
                       <div className="generic-preview">
@@ -183,7 +180,9 @@ export default function ProjectGrid({ entries, loading }) {
                         <span className="preview-host">{domain}</span>
                       </div>
                     )}
-                  </div>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Card Body */}
