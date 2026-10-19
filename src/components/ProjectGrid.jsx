@@ -31,6 +31,7 @@ const PROJECT_CATEGORY_MAP = {
   'flowerbox': 'Marketing',
   'rajputi rental': 'Website',
   'affinity travels': 'Branding',
+  'unmukt mahila': 'Website',
 }
 
 export default function ProjectGrid({ entries, loading, searchQuery = '' }) {
