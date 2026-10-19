@@ -13,7 +13,8 @@ export default function PdfThumbnail({ url, alt }) {
 
     const render = async () => {
       try {
-        const pdf = await pdfjsLib.getDocument(url).promise
+        const proxied = `/api/pdf-proxy?url=${encodeURIComponent(url)}`
+        const pdf = await pdfjsLib.getDocument(proxied).promise
         const page = await pdf.getPage(1)
         const viewport = page.getViewport({ scale: 1.5 })
 
