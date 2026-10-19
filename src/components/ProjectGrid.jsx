@@ -72,7 +72,7 @@ export default function ProjectGrid({ entries, loading, searchQuery = '' }) {
     if (entry.thumbnail) return entry.thumbnail
     const norm = normalizeUrl(entry.url)
     if (isGoogleDrive(norm) || isPdf(norm)) return null
-    return `https://image.thum.io/get/width/1200/crop/800/noanimate/${norm}`
+    return `https://image.thum.io/get/width/1200/crop/800/wait/6/noanimate/${norm}`
   }
 
   const handleImageError = (e, entry) => {
