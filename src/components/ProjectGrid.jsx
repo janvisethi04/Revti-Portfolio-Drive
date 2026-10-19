@@ -27,10 +27,15 @@ export default function ProjectGrid({ entries, loading }) {
     return url.includes('drive.google.com') || url.includes('docs.google.com')
   }
 
+  const isPdf = (url) => {
+    if (!url) return false
+    return /\.pdf($|\?)/i.test(url.trim())
+  }
+
   const getPrimaryThumbnail = (entry) => {
     if (entry.thumbnail) return entry.thumbnail
     const norm = normalizeUrl(entry.url)
-    if (isGoogleDrive(norm)) return null
+    if (isGoogleDrive(norm) || isPdf(norm)) return null
     return `https://image.thum.io/get/width/600/crop/400/noanimate/${norm}`
   }
 
@@ -121,6 +126,7 @@ export default function ProjectGrid({ entries, loading }) {
             const thumbUrl = getPrimaryThumbnail(entry)
             const domain = getDomainOrName(entry)
             const isDrive = isGoogleDrive(entry.url)
+            const isPdfFile = isPdf(entry.url)
             const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`
 
             return (
@@ -157,6 +163,14 @@ export default function ProjectGrid({ entries, loading }) {
                           <path d="M73.4 26.5l-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3L43.65 25l24.4 42.25 12.65-21.9c.8-1.4 1.2-2.95 1.2-4.5l-7.3-9.85z" fill="#FFBA00"/>
                         </svg>
                         <span>Google Drive</span>
+                      </div>
+                    ) : isPdfFile ? (
+                      <div className="pdf-preview">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#E54B4B" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                          <polyline points="14 2 14 8 20 8"></polyline>
+                        </svg>
+                        <span>PDF Document</span>
                       </div>
                     ) : (
                       <div className="generic-preview">
