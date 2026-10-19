@@ -72,7 +72,7 @@ export default function ProjectGrid({ entries, loading, searchQuery = '' }) {
     if (entry.thumbnail) return entry.thumbnail
     const norm = normalizeUrl(entry.url)
     if (isGoogleDrive(norm) || isPdf(norm)) return null
-    return `https://image.thum.io/get/width/1200/crop/800/wait/6/noanimate/${norm}`
+    return `https://api.microlink.io?url=${encodeURIComponent(norm)}&screenshot=true&waitForTimeout=5000&meta=false&embed=screenshot.url`
   }
 
   const handleImageError = (e, entry) => {
@@ -81,10 +81,10 @@ export default function ProjectGrid({ entries, loading, searchQuery = '' }) {
 
     if (stage === '1') {
       e.target.dataset.stage = '2'
-      e.target.src = `https://s0.wp.com/mshots/v1/${encodeURIComponent(norm)}?w=1200&h=800`
+      e.target.src = `https://image.thum.io/get/width/1200/crop/800/noanimate/${norm}`
     } else if (stage === '2') {
       e.target.dataset.stage = '3'
-      e.target.src = `https://api.microlink.io?url=${encodeURIComponent(norm)}&screenshot=true&meta=false&embed=screenshot.url`
+      e.target.src = `https://s0.wp.com/mshots/v1/${encodeURIComponent(norm)}?w=1200&h=800`
     } else {
       e.target.style.display = 'none'
       if (e.target.nextElementSibling) {
