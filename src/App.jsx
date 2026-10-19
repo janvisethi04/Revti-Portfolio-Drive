@@ -120,7 +120,6 @@ export default function App() {
               </svg>
             </span>
             <span className="logo-text">Revti Portfolio Links</span>
-            <span className="counter-pill">{entries.length}</span>
           </div>
 
           <div className="header-actions">
