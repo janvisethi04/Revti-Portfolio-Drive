@@ -1,36 +1,21 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from './lib/supabase'
-import LoginScreen from './components/LoginScreen'
-import LinkTable from './components/LinkTable'
+import ProjectGrid from './components/ProjectGrid'
 import AddModal from './components/AddModal'
 import Toast from './components/Toast'
 import './App.css'
 
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(() => {
-    return localStorage.getItem('is_authenticated') === 'true'
-  })
   const [entries, setEntries]     = useState([])
-  const [loading, setLoading]     = useState(false)
+  const [loading, setLoading]     = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [saving, setSaving]       = useState(false)
   const [toast, setToast]         = useState({ visible: false, message: '', type: 'success' })
 
-  const handleLogin = () => {
-    localStorage.setItem('is_authenticated', 'true')
-    setLoggedIn(true)
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem('is_authenticated')
-    setLoggedIn(false)
-    setEntries([])
-  }
-
   // ── TOAST ──────────────────────────────────────────
   const showToast = (message, type = 'success') => {
     setToast({ visible: true, message, type })
-    setTimeout(() => setToast(t => ({ ...t, visible: false })), 2800)
+    setTimeout(() => setToast(t => ({ ...t, visible: false })), 2600)
   }
 
   // ── FETCH DATA ─────────────────────────────────────
@@ -42,7 +27,7 @@ export default function App() {
       .order('created_at', { ascending: false })
 
     if (error) {
-      showToast('Failed to load links: ' + error.message, 'error')
+      showToast('Failed to load projects: ' + error.message, 'error')
     } else {
       setEntries(data || [])
     }
@@ -50,34 +35,47 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    if (loggedIn) fetchEntries()
-  }, [loggedIn, fetchEntries])
+    fetchEntries()
+  }, [fetchEntries])
 
   // ── REALTIME ───────────────────────────────────────
   useEffect(() => {
-    if (!loggedIn) return
-
     const channel = supabase
-      .channel('links-realtime')
+      .channel('projects-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'links' }, () => {
         fetchEntries()
       })
       .subscribe()
 
     return () => supabase.removeChannel(channel)
-  }, [loggedIn, fetchEntries])
+  }, [fetchEntries])
 
   // ── ADD ENTRY ──────────────────────────────────────
-  const handleSave = async ({ project, name, url }) => {
+  const handleSave = async ({ project, name, url, thumbnail }) => {
     setSaving(true)
+    const payload = { project, name, url }
+    if (thumbnail) payload.thumbnail = thumbnail
+
     const { error } = await supabase
       .from('links')
-      .insert([{ project, name, url }])
+      .insert([payload])
 
     if (error) {
-      showToast('Failed to save: ' + error.message, 'error')
+      // If thumbnail column doesn't exist in user's DB table, fallback without it
+      if (error.message && error.message.includes('thumbnail')) {
+        const retry = await supabase.from('links').insert([{ project, name, url }])
+        if (retry.error) {
+          showToast('Failed to save: ' + retry.error.message, 'error')
+        } else {
+          showToast('Project added successfully!', 'success')
+          setShowModal(false)
+          fetchEntries()
+        }
+      } else {
+        showToast('Failed to save: ' + error.message, 'error')
+      }
     } else {
-      showToast('Link added successfully!', 'success')
+      showToast('Project added successfully!', 'success')
       setShowModal(false)
       fetchEntries()
     }
@@ -94,73 +92,59 @@ export default function App() {
     if (error) {
       showToast('Failed to delete: ' + error.message, 'error')
     } else {
-      showToast('Link deleted!', 'success')
+      showToast('Project deleted', 'success')
       setEntries(prev => prev.filter(e => e.id !== id))
     }
   }
 
   // ── KEYBOARD SHORTCUT ──────────────────────────────
   useEffect(() => {
-    const handler = (e) => { if (e.key === 'Escape') setShowModal(false) }
+    const handler = (e) => {
+      if (e.key === 'Escape') setShowModal(false)
+    }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
   }, [])
 
-  if (!loggedIn) {
-    return <LoginScreen onLogin={handleLogin} />
-  }
-
   return (
     <div className="app">
-
-      {/* ── HEADER ── */}
+      {/* ── TOP HEADER ── */}
       <header>
-        <div className="logo">
-          <span className="logo-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-            </svg>
-          </span>
-          <span className="logo-text">Link Vault</span>
-        </div>
-        <div className="header-right">
-          <span className="counter-badge">
-            {entries.length} {entries.length === 1 ? 'link' : 'links'}
-          </span>
-          <button
-            className="btn-logout"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
+        <div className="header-container">
+          <div className="logo">
+            <span className="logo-icon">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </span>
+            <span className="logo-text">Projects</span>
+            <span className="counter-pill">{entries.length}</span>
+          </div>
+
+          <div className="header-actions">
+            <button className="btn-create" onClick={() => setShowModal(true)}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Add project</span>
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* ── MAIN ── */}
+      {/* ── MAIN CONTENT ── */}
       <main>
-        <div className="page-header">
-          <div className="page-title">
-            <h2>Saved Links</h2>
-            <p>Access and manage your project URLs in one place</p>
-          </div>
-          <button className="btn-add" onClick={() => setShowModal(true)}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-            <span>Add Link</span>
-          </button>
-        </div>
-
-        <LinkTable
+        <ProjectGrid
           entries={entries}
           loading={loading}
           onDelete={handleDelete}
         />
       </main>
 
-      {/* ── MODAL ── */}
+      {/* ── ADD MODAL ── */}
       {showModal && (
         <AddModal
           onClose={() => setShowModal(false)}
@@ -169,7 +153,7 @@ export default function App() {
         />
       )}
 
-      {/* ── TOAST ── */}
+      {/* ── TOAST NOTIFICATIONS ── */}
       <Toast {...toast} />
     </div>
   )
