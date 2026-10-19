@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const SUGGESTED_CATEGORIES = ['Websites', 'WordPress', 'Google Drive', 'Design', 'Portfolio', 'Client Work']
+const SUGGESTED_CATEGORIES = ['Branding', 'Website', 'Marketing', 'Social Media', 'Design', 'Drive / Assets']
 
 export default function AddModal({ onClose, onSave, saving }) {
   const [project, setProject]     = useState('')
@@ -67,7 +67,7 @@ export default function AddModal({ onClose, onSave, saving }) {
               type="text"
               value={project}
               onChange={e => setProject(e.target.value)}
-              placeholder="e.g. Websites, WordPress, Google Drive…"
+              placeholder="e.g. Branding, Website, Marketing…"
               autoFocus
             />
             {/* Quick Category Suggestions */}

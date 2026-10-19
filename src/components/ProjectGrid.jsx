@@ -86,12 +86,21 @@ export default function ProjectGrid({ entries, loading, onDelete }) {
     }
   }
 
-  // Categories list dynamically calculated from entries
+  // Predefined standard categories + any custom ones created by the user
+  const standardCategories = ['All', 'Branding', 'Website', 'Marketing', 'Social Media', 'Design']
+
   const categoriesWithCounts = useMemo(() => {
     const counts = { All: entries.length }
+    // Initialize standard categories
+    standardCategories.forEach(cat => {
+      if (cat !== 'All') counts[cat] = 0
+    })
+
     entries.forEach(e => {
       const cat = e.project ? e.project.trim() : 'General'
-      counts[cat] = (counts[cat] || 0) + 1
+      const matched = standardCategories.find(s => s.toLowerCase() === cat.toLowerCase())
+      const key = matched || cat
+      counts[key] = (counts[key] || 0) + 1
     })
     return counts
   }, [entries])
