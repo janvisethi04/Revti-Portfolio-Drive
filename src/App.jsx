@@ -7,12 +7,25 @@ import Toast from './components/Toast'
 import './App.css'
 
 export default function App() {
-  const [loggedIn, setLoggedIn]   = useState(false)
+  const [loggedIn, setLoggedIn] = useState(() => {
+    return localStorage.getItem('is_authenticated') === 'true'
+  })
   const [entries, setEntries]     = useState([])
   const [loading, setLoading]     = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [saving, setSaving]       = useState(false)
   const [toast, setToast]         = useState({ visible: false, message: '', type: 'success' })
+
+  const handleLogin = () => {
+    localStorage.setItem('is_authenticated', 'true')
+    setLoggedIn(true)
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('is_authenticated')
+    setLoggedIn(false)
+    setEntries([])
+  }
 
   // ── TOAST ──────────────────────────────────────────
   const showToast = (message, type = 'success') => {
@@ -94,7 +107,7 @@ export default function App() {
   }, [])
 
   if (!loggedIn) {
-    return <LoginScreen onLogin={() => setLoggedIn(true)} />
+    return <LoginScreen onLogin={handleLogin} />
   }
 
   return (
@@ -112,7 +125,7 @@ export default function App() {
           </span>
           <button
             className="btn-logout"
-            onClick={() => { setLoggedIn(false); setEntries([]) }}
+            onClick={handleLogout}
           >
             🔒 Logout
           </button>
