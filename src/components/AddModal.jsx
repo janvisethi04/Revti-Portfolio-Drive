@@ -1,31 +1,48 @@
 import { useState } from 'react'
 
+const SUGGESTED_CATEGORIES = ['Websites', 'WordPress', 'Google Drive', 'Design', 'Portfolio', 'Client Work']
+
 export default function AddModal({ onClose, onSave, saving }) {
-  const [project, setProject]   = useState('')
-  const [name, setName]         = useState('')
-  const [url, setUrl]           = useState('')
+  const [project, setProject]     = useState('')
+  const [name, setName]           = useState('')
+  const [url, setUrl]             = useState('')
   const [thumbnail, setThumbnail] = useState('')
-  const [validErr, setValidErr] = useState('')
+  const [validErr, setValidErr]   = useState('')
 
   const isValidUrl = (str) => {
-    try { new URL(str); return true } catch { return false }
+    try {
+      let testUrl = str.trim()
+      if (!/^https?:\/\//i.test(testUrl)) {
+        testUrl = 'https://' + testUrl
+      }
+      new URL(testUrl)
+      return true
+    } catch {
+      return false
+    }
   }
 
   const handleSave = (e) => {
     if (e) e.preventDefault()
     if (!project.trim() || !name.trim() || !url.trim()) {
-      setValidErr('Please fill in project name, title and URL')
+      setValidErr('Please fill in category, title and URL')
       return
     }
     if (!isValidUrl(url.trim())) {
-      setValidErr('Please enter a valid URL (including https://)')
+      setValidErr('Please enter a valid website or drive URL')
       return
     }
+
+    let cleanUrl = url.trim()
+    if (!/^https?:\/\//i.test(cleanUrl)) {
+      cleanUrl = 'https://' + cleanUrl
+    }
+
     setValidErr('')
     onSave({
       project: project.trim(),
       name: name.trim(),
-      url: url.trim(),
+      url: cleanUrl,
       thumbnail: thumbnail.trim() || null
     })
   }
@@ -45,14 +62,27 @@ export default function AddModal({ onClose, onSave, saving }) {
 
         <form onSubmit={handleSave}>
           <div className="form-field">
-            <label>Project / Category</label>
+            <label>Category</label>
             <input
               type="text"
               value={project}
               onChange={e => setProject(e.target.value)}
-              placeholder="e.g. WordPress, Client Site, Drive"
+              placeholder="e.g. Websites, WordPress, Google Drive…"
               autoFocus
             />
+            {/* Quick Category Suggestions */}
+            <div className="category-suggestions">
+              {SUGGESTED_CATEGORIES.map(cat => (
+                <button
+                  key={cat}
+                  type="button"
+                  className={`cat-pill ${project.toLowerCase() === cat.toLowerCase() ? 'active' : ''}`}
+                  onClick={() => setProject(cat)}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="form-field">
@@ -61,14 +91,14 @@ export default function AddModal({ onClose, onSave, saving }) {
               type="text"
               value={name}
               onChange={e => setName(e.target.value)}
-              placeholder="e.g. cbetter.in or Design Assets"
+              placeholder="e.g. cbetter.in or Branding Assets"
             />
           </div>
 
           <div className="form-field">
             <label>Project URL</label>
             <input
-              type="url"
+              type="text"
               value={url}
               onChange={e => setUrl(e.target.value)}
               placeholder="https://... (Website, Google Drive, etc.)"
@@ -77,13 +107,13 @@ export default function AddModal({ onClose, onSave, saving }) {
 
           <div className="form-field">
             <label>
-              Custom Thumbnail Image URL <span className="label-optional">(optional)</span>
+              Custom Thumbnail URL <span className="label-optional">(optional)</span>
             </label>
             <input
               type="url"
               value={thumbnail}
               onChange={e => setThumbnail(e.target.value)}
-              placeholder="Leave empty for auto-generated preview"
+              placeholder="Leave empty for automatic live website screenshot"
             />
           </div>
 

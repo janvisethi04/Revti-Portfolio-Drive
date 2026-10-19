@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 
 export default function ProjectGrid({ entries, loading, onDelete }) {
-  const [search, setSearch]             = useState('')
-  const [copiedId, setCopiedId]         = useState(null)
-  const [itemToDelete, setItemToDelete] = useState(null)
+  const [search, setSearch]                     = useState('')
+  const [selectedCategory, setSelectedCategory] = useState('All')
+  const [copiedId, setCopiedId]                 = useState(null)
+  const [itemToDelete, setItemToDelete]         = useState(null)
 
   const formatDate = (iso) => {
     if (!iso) return ''
@@ -38,7 +39,6 @@ export default function ProjectGrid({ entries, loading, onDelete }) {
     if (entry.thumbnail) return entry.thumbnail
     const norm = normalizeUrl(entry.url)
     if (isGoogleDrive(norm)) return null
-    // Fast reliable live screenshot via thum.io
     return `https://image.thum.io/get/width/600/crop/400/noanimate/${norm}`
   }
 
@@ -47,15 +47,12 @@ export default function ProjectGrid({ entries, loading, onDelete }) {
     const stage = e.target.dataset.stage || '1'
 
     if (stage === '1') {
-      // Stage 2: fallback to WordPress mShots
       e.target.dataset.stage = '2'
       e.target.src = `https://s0.wp.com/mshots/v1/${encodeURIComponent(norm)}?w=600`
     } else if (stage === '2') {
-      // Stage 3: fallback to Microlink screenshot
       e.target.dataset.stage = '3'
       e.target.src = `https://api.microlink.io?url=${encodeURIComponent(norm)}&screenshot=true&meta=false&embed=screenshot.url`
     } else {
-      // Final: hide image and display crisp fallback preview
       e.target.style.display = 'none'
       if (e.target.nextElementSibling) {
         e.target.nextElementSibling.style.display = 'flex'
@@ -89,16 +86,44 @@ export default function ProjectGrid({ entries, loading, onDelete }) {
     }
   }
 
-  const filtered = entries.filter(e =>
-    e.project.toLowerCase().includes(search.toLowerCase()) ||
-    e.name.toLowerCase().includes(search.toLowerCase()) ||
-    e.url.toLowerCase().includes(search.toLowerCase())
-  )
+  // Categories list dynamically calculated from entries
+  const categoriesWithCounts = useMemo(() => {
+    const counts = { All: entries.length }
+    entries.forEach(e => {
+      const cat = e.project ? e.project.trim() : 'General'
+      counts[cat] = (counts[cat] || 0) + 1
+    })
+    return counts
+  }, [entries])
+
+  const categoryList = useMemo(() => {
+    return Object.keys(categoriesWithCounts)
+  }, [categoriesWithCounts])
+
+  // Filtering by both Category and Search query
+  const filtered = useMemo(() => {
+    return entries.filter(e => {
+      const entryCat = e.project ? e.project.trim().toLowerCase() : 'general'
+      const matchesCategory =
+        selectedCategory === 'All' ||
+        entryCat === selectedCategory.toLowerCase()
+
+      const q = search.trim().toLowerCase()
+      const matchesSearch =
+        !q ||
+        (e.project && e.project.toLowerCase().includes(q)) ||
+        (e.name && e.name.toLowerCase().includes(q)) ||
+        (e.url && e.url.toLowerCase().includes(q))
+
+      return matchesCategory && matchesSearch
+    })
+  }, [entries, selectedCategory, search])
 
   return (
     <>
-      {/* Search Bar */}
-      <div className="search-bar-wrap">
+      {/* Search and Category Filter Bar */}
+      <div className="filter-section">
+        {/* Search Input */}
         <div className="search-bar">
           <svg className="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
@@ -108,11 +133,28 @@ export default function ProjectGrid({ entries, loading, onDelete }) {
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Search projects, domains or links…"
+            placeholder="Search projects or links…"
           />
           {search && (
             <button className="clear-search" onClick={() => setSearch('')}>✕</button>
           )}
+        </div>
+
+        {/* Category Filter Chips */}
+        <div className="category-scroll-container">
+          <div className="category-chips">
+            {categoryList.map(cat => (
+              <button
+                key={cat}
+                type="button"
+                className={`category-chip ${selectedCategory.toLowerCase() === cat.toLowerCase() ? 'active' : ''}`}
+                onClick={() => setSelectedCategory(cat)}
+              >
+                <span>{cat}</span>
+                <span className="chip-count">{categoriesWithCounts[cat]}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -125,8 +167,16 @@ export default function ProjectGrid({ entries, loading, onDelete }) {
       ) : filtered.length === 0 ? (
         <div className="empty-state">
           <div className="empty-box-icon">📁</div>
-          <p>{search ? 'No matching projects found' : 'No projects added yet'}</p>
-          <small>{search ? 'Try adjusting your search query.' : 'Click "+ Add Project" to save your first project.'}</small>
+          <p>
+            {search || selectedCategory !== 'All'
+              ? 'No matching projects found'
+              : 'No projects added yet'}
+          </p>
+          <small>
+            {search || selectedCategory !== 'All'
+              ? 'Try selecting "All" or adjusting your search keyword.'
+              : 'Click "+ Add Project" to save your first project.'}
+          </small>
         </div>
       ) : (
         <div className="projects-grid">
