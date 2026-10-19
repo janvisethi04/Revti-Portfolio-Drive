@@ -1,14 +1,8 @@
 import { useState, useMemo } from 'react'
 
-export default function ProjectGrid({ entries, loading, onDelete }) {
+export default function ProjectGrid({ entries, loading }) {
   const [selectedCategory, setSelectedCategory] = useState('All')
-  const [itemToDelete, setItemToDelete]         = useState(null)
-
-  const formatDate = (iso) => {
-    if (!iso) return ''
-    const d = new Date(iso)
-    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-  }
+  const [copiedId, setCopiedId]                 = useState(null)
 
   const normalizeUrl = (url) => {
     if (!url) return ''
@@ -63,16 +57,13 @@ export default function ProjectGrid({ entries, loading, onDelete }) {
     window.open(finalUrl, '_blank', 'noopener,noreferrer')
   }
 
-  const handleDeleteClick = (e, entry) => {
+  const handleCopy = (e, url, id) => {
     e.stopPropagation()
-    setItemToDelete(entry)
-  }
-
-  const confirmDelete = () => {
-    if (itemToDelete) {
-      onDelete(itemToDelete.id)
-      setItemToDelete(null)
-    }
+    const finalUrl = normalizeUrl(url)
+    navigator.clipboard.writeText(finalUrl).then(() => {
+      setCopiedId(id)
+      setTimeout(() => setCopiedId(null), 2000)
+    })
   }
 
   // Categories list without numbers
@@ -98,7 +89,7 @@ export default function ProjectGrid({ entries, loading, onDelete }) {
 
   return (
     <div className="dashboard-content">
-      {/* Centered Category Filter Pills (No numbers, clean monochrome) */}
+      {/* Centered Category Filter Pills (Monochrome) */}
       <div className="categories-center-wrap">
         <div className="category-chips">
           {categoryList.map(cat => (
@@ -163,7 +154,7 @@ export default function ProjectGrid({ entries, loading, onDelete }) {
                           <path d="M73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5H43.65l8.7 15.05 5.05 8.75h16.15z" fill="#EA4335"/>
                           <path d="M43.65 25L57.4 1.2C56.05.4 54.5 0 52.95 0H34.35l13.75 23.8 4.45 1.2z" fill="#00832D"/>
                           <path d="M59.8 53H13.75L0 76.8h54.75c1.55 0 3.1-.4 4.45-1.2l.6-.6z" fill="#2684FC"/>
-                          <path d="M73.4 26.5l-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3L43.65 25l24.4 42.25 12.65-21.9c.8-1.4 1.2-2.95 1.2-4.5 0-1.55-.4-3.1-1.2-4.5l-7.3-9.85z" fill="#FFBA00"/>
+                          <path d="M73.4 26.5l-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3L43.65 25l24.4 42.25 12.65-21.9c.8-1.4 1.2-2.95 1.2-4.5l-7.3-9.85z" fill="#FFBA00"/>
                         </svg>
                         <span>Google Drive</span>
                       </div>
@@ -179,51 +170,39 @@ export default function ProjectGrid({ entries, loading, onDelete }) {
                       </div>
                     )}
                   </div>
-
-                  {/* Subtle delete button on card hover */}
-                  <button
-                    className="card-delete-btn"
-                    onClick={(e) => handleDeleteClick(e, entry)}
-                    title="Delete project"
-                  >
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <polyline points="3 6 5 6 21 6"></polyline>
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
-                  </button>
                 </div>
 
-                {/* Card Body - Exactly matching Picture 1 */}
+                {/* Card Body */}
                 <div className="project-info">
                   <h3 className="project-title" title={entry.name || domain}>
                     {entry.name || domain}
                   </h3>
 
-                  <p className="project-meta-row">
-                    <span>{entry.project || 'Website'}</span>
-                    <span className="meta-dot">•</span>
-                    <span>Created {formatDate(entry.created_at)}</span>
-                  </p>
+                  <div className="project-meta-row">
+                    <span className="project-category">{entry.project || 'Website'}</span>
+                    <button
+                      type="button"
+                      className={`card-copy-btn ${copiedId === entry.id ? 'copied' : ''}`}
+                      onClick={(e) => handleCopy(e, entry.url, entry.id)}
+                      title="Copy URL"
+                    >
+                      {copiedId === entry.id ? (
+                        <>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                          <span>Copied</span>
+                        </>
+                      ) : (
+                        <>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                          <span>Copy</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             )
           })}
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {itemToDelete && (
-        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setItemToDelete(null)}>
-          <div className="modal modal-confirm">
-            <h3>Delete this project?</h3>
-            <p>
-              Are you sure you want to remove <strong>"{itemToDelete.name || itemToDelete.project}"</strong>?
-            </p>
-            <div className="modal-actions">
-              <button className="btn-cancel" onClick={() => setItemToDelete(null)}>Cancel</button>
-              <button className="btn-danger" onClick={confirmDelete}>Delete</button>
-            </div>
-          </div>
         </div>
       )}
     </div>

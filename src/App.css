@@ -258,36 +258,6 @@ main {
   white-space: nowrap;
 }
 
-/* Subtle Delete Button (Appears on Hover) */
-.card-delete-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-sm);
-  background: rgba(20, 20, 20, 0.85);
-  border: 1px solid #333333;
-  color: #a1a1aa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
-  z-index: 10;
-}
-
-.project-card:hover .card-delete-btn {
-  opacity: 1;
-}
-
-.card-delete-btn:hover {
-  background: rgba(220, 38, 38, 0.2);
-  border-color: rgba(220, 38, 38, 0.6);
-  color: #f87171;
-}
-
 /* Card Body - Exactly matching Picture 1 */
 .project-info {
   padding: 14px 16px 16px 16px;
@@ -304,20 +274,48 @@ main {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .project-meta-row {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 0.82rem;
-  color: var(--text-secondary);
-  font-weight: 400;
+  justify-content: space-between;
+  margin-top: 2px;
 }
 
-.meta-dot {
-  color: #52525b;
+.project-category {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.card-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: var(--radius-sm);
+  color: #a1a1aa;
+  font-size: 0.72rem;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.card-copy-btn:hover {
+  background: #27272a;
+  border-color: #52525b;
+  color: #ffffff;
+}
+
+.card-copy-btn.copied {
+  background: #27272a;
+  border-color: #ffffff;
+  color: #ffffff;
 }
 
 /* ─── EMPTY STATE ─── */
