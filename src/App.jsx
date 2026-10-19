@@ -116,8 +116,13 @@ export default function App() {
       {/* ── HEADER ── */}
       <header>
         <div className="logo">
-          <span className="logo-icon">🔗</span>
-          <span className="logo-text">Link Manager</span>
+          <span className="logo-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+            </svg>
+          </span>
+          <span className="logo-text">Link Vault</span>
         </div>
         <div className="header-right">
           <span className="counter-badge">
@@ -127,7 +132,7 @@ export default function App() {
             className="btn-logout"
             onClick={handleLogout}
           >
-            🔒 Logout
+            Logout
           </button>
         </div>
       </header>
@@ -136,12 +141,15 @@ export default function App() {
       <main>
         <div className="page-header">
           <div className="page-title">
-            <h2>📋 Your Links</h2>
-            <p>Manage and access your project links</p>
+            <h2>Saved Links</h2>
+            <p>Access and manage your project URLs in one place</p>
           </div>
           <button className="btn-add" onClick={() => setShowModal(true)}>
-            <span>➕</span>
-            <span>Add New Link</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add Link</span>
           </button>
         </div>
 
