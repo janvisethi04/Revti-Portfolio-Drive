@@ -3,9 +3,13 @@ import { supabase } from './lib/supabase'
 import ProjectGrid from './components/ProjectGrid'
 import AddModal from './components/AddModal'
 import Toast from './components/Toast'
+import LoginScreen from './components/LoginScreen'
 import './App.css'
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('is_authenticated') === 'true'
+  })
   const [entries, setEntries]     = useState([])
   const [loading, setLoading]     = useState(true)
   const [showModal, setShowModal] = useState(false)
@@ -13,6 +17,16 @@ export default function App() {
   const [toast, setToast]         = useState({ visible: false, message: '', type: 'success' })
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+
+  const handleLogin = () => {
+    localStorage.setItem('is_authenticated', 'true')
+    setIsAuthenticated(true)
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('is_authenticated')
+    setIsAuthenticated(false)
+  }
 
   // ── TOAST ──────────────────────────────────────────
   const showToast = (message, type = 'success') => {
@@ -22,6 +36,7 @@ export default function App() {
 
   // ── FETCH DATA ─────────────────────────────────────
   const fetchEntries = useCallback(async () => {
+    if (!isAuthenticated) return
     setLoading(true)
     const { data, error } = await supabase
       .from('links')
@@ -34,14 +49,17 @@ export default function App() {
       setEntries(data || [])
     }
     setLoading(false)
-  }, [])
+  }, [isAuthenticated])
 
   useEffect(() => {
-    fetchEntries()
-  }, [fetchEntries])
+    if (isAuthenticated) {
+      fetchEntries()
+    }
+  }, [isAuthenticated, fetchEntries])
 
   // ── REALTIME ───────────────────────────────────────
   useEffect(() => {
+    if (!isAuthenticated) return
     const channel = supabase
       .channel('projects-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'links' }, () => {
@@ -50,7 +68,7 @@ export default function App() {
       .subscribe()
 
     return () => supabase.removeChannel(channel)
-  }, [fetchEntries])
+  }, [isAuthenticated, fetchEntries])
 
   // ── ADD ENTRY ──────────────────────────────────────
   const handleSave = async ({ project, name, url, thumbnail }) => {
@@ -108,6 +126,10 @@ export default function App() {
     return () => window.removeEventListener('keydown', handler)
   }, [])
 
+  if (!isAuthenticated) {
+    return <LoginScreen onLogin={handleLogin} />
+  }
+
   return (
     <div className="app">
       {/* ── TOP HEADER ── */}
@@ -146,6 +168,20 @@ export default function App() {
                 )}
               </button>
             </div>
+
+            <button
+              type="button"
+              className="logout-btn"
+              onClick={handleLogout}
+              title="Lock Dashboard"
+              aria-label="Lock Dashboard"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <span>Lock</span>
+            </button>
           </div>
         </div>
       </header>
