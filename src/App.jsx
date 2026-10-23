@@ -8,7 +8,11 @@ import './App.css'
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('is_authenticated') === 'true'
+    // Clear any previous persistent localStorage so password screen appears first
+    try {
+      localStorage.removeItem('is_authenticated')
+    } catch (e) {}
+    return sessionStorage.getItem('is_authenticated') === 'true'
   })
   const [entries, setEntries]     = useState([])
   const [loading, setLoading]     = useState(true)
@@ -19,12 +23,15 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('')
 
   const handleLogin = () => {
-    localStorage.setItem('is_authenticated', 'true')
+    sessionStorage.setItem('is_authenticated', 'true')
     setIsAuthenticated(true)
   }
 
   const handleLogout = () => {
-    localStorage.removeItem('is_authenticated')
+    sessionStorage.removeItem('is_authenticated')
+    try {
+      localStorage.removeItem('is_authenticated')
+    } catch (e) {}
     setIsAuthenticated(false)
   }
 
